@@ -5,13 +5,16 @@ import 'leaflet/dist/leaflet.css';
 import './global.css';
 import App from './App.jsx';
 import { AppProvider } from './context/AppContext.jsx';
+import { LanguageProvider } from './context/LanguageContext.jsx';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
-      <AppProvider>
-        <App />
-      </AppProvider>
+      <LanguageProvider>
+        <AppProvider>
+          <App />
+        </AppProvider>
+      </LanguageProvider>
     </BrowserRouter>
   </React.StrictMode>,
 );

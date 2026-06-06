@@ -4,12 +4,13 @@ import { Activity, Baby, Brain, HeartPulse, Moon, Sparkles, Wind } from 'lucide-
 import { useApp } from '../context/AppContext';
 import { mindfulnessSessions, moodCheckins, moodOptions, pregnancyProfile, sessionTypes } from '../data/wellnessData';
 import { average, generateWellnessRecommendations, pregnancyWeek, recommendBreathingSession, unifiedWellnessScore } from '../utils/wellnessAI';
+import { useLanguage } from '../context/LanguageContext';
 
 const tabs = [
-  { id: 'mood', label: 'Mood Check-In', icon: Brain },
-  { id: 'pregnancy', label: 'Pregnancy Coach', icon: Baby },
-  { id: 'breathing', label: 'Breathing', icon: Wind },
-  { id: 'summary', label: 'My Wellness', icon: HeartPulse },
+  { id: 'mood', labelKey: 'moodCheckIn', icon: Brain },
+  { id: 'pregnancy', labelKey: 'pregnancyCoach', icon: Baby },
+  { id: 'breathing', labelKey: 'breathing', icon: Wind },
+  { id: 'summary', labelKey: 'myWellness', icon: HeartPulse },
 ];
 
 function SimpleButton({ icon: Icon, label, active, onClick }) {
@@ -37,6 +38,7 @@ function InfoRow({ label, value }) {
 
 export default function Wellness() {
   const { products } = useApp();
+  const { t } = useLanguage();
   const [active, setActive] = useState('mood');
   const [selectedMood, setSelectedMood] = useState(moodOptions[1]);
   const latestMood = moodCheckins.at(-1);
@@ -64,15 +66,15 @@ export default function Wellness() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
       <section className="panel p-6">
-        <p className="font-bold text-accent">Wellness hub</p>
-        <h1 className="mt-2 text-4xl font-black text-dark">How are you feeling today?</h1>
+        <p className="font-bold text-accent">{t('wellnessHub')}</p>
+        <h1 className="mt-2 text-4xl font-black text-dark">{t('wellnessTitle')}</h1>
         <p className="mt-3 max-w-2xl text-slate-600">
-          Track mood, pregnancy wellness, and breathing in one simple place.
+          {t('wellnessCopy')}
         </p>
 
         <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {tabs.map((tab) => (
-            <SimpleButton key={tab.id} icon={tab.icon} label={tab.label} active={active === tab.id} onClick={() => setActive(tab.id)} />
+            <SimpleButton key={tab.id} icon={tab.icon} label={t(tab.labelKey)} active={active === tab.id} onClick={() => setActive(tab.id)} />
           ))}
         </div>
       </section>
@@ -82,7 +84,7 @@ export default function Wellness() {
           <div>
             <div className="flex items-center gap-3">
               <Brain className="text-primary" />
-              <h2 className="text-2xl font-black text-dark">Mood Check-In</h2>
+              <h2 className="text-2xl font-black text-dark">{t('moodCheckIn')}</h2>
             </div>
             <div className="mt-5 grid grid-cols-5 gap-2">
               {moodOptions.map((mood) => (
@@ -97,12 +99,12 @@ export default function Wellness() {
               ))}
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
-              <InfoRow label="Energy" value={`${latestMood.energyLevel}/10`} />
-              <InfoRow label="Sleep" value={`${latestMood.sleepHours} hrs`} />
-              <InfoRow label="Stress" value={`${latestMood.stressScore}/10`} />
+              <InfoRow label={t('energy')} value={`${latestMood.energyLevel}/10`} />
+              <InfoRow label={t('sleep')} value={`${latestMood.sleepHours} hrs`} />
+              <InfoRow label={t('stress')} value={`${latestMood.stressScore}/10`} />
             </div>
-            <textarea className="input mt-4 min-h-24" defaultValue="Write a short note about your day..." />
-            <button className="btn-primary mt-4 w-full sm:w-auto">Save mood</button>
+            <textarea className="input mt-4 min-h-24" defaultValue={t('moodNote')} />
+            <button className="btn-primary mt-4 w-full sm:w-auto">{t('saveMood')}</button>
           </div>
         )}
 
@@ -110,19 +112,19 @@ export default function Wellness() {
           <div>
             <div className="flex items-center gap-3">
               <Baby className="text-primary" />
-              <h2 className="text-2xl font-black text-dark">Pregnancy Coach</h2>
+              <h2 className="text-2xl font-black text-dark">{t('pregnancyCoach')}</h2>
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-2">
-              <InfoRow label="Current week" value={`Week ${currentWeek}`} />
-              <InfoRow label="Due date" value={pregnancyProfile.dueDate} />
-              <InfoRow label="Water today" value={`${pregnancyProfile.waterCups}/8 cups`} />
-              <InfoRow label="Iron today" value={`${pregnancyProfile.ironIntakeMg}mg`} />
+              <InfoRow label={t('currentWeek')} value={t('week', { week: currentWeek })} />
+              <InfoRow label={t('dueDate')} value={pregnancyProfile.dueDate} />
+              <InfoRow label={t('waterToday')} value={`${pregnancyProfile.waterCups}/8 cups`} />
+              <InfoRow label={t('ironToday')} value={`${pregnancyProfile.ironIntakeMg}mg`} />
             </div>
             <div className="mt-5 rounded-lg bg-green-50 p-4">
-              <p className="font-black text-dark">Today’s guidance</p>
-              <p className="mt-2 text-sm leading-6 text-slate-700">Eat iron-rich foods, drink water, take a gentle walk if cleared, and avoid unsafe foods.</p>
+              <p className="font-black text-dark">{t('todaysGuidance')}</p>
+              <p className="mt-2 text-sm leading-6 text-slate-700">{t('pregnancyGuidance')}</p>
             </div>
-            <button className="btn-primary mt-4 w-full sm:w-auto">Log pregnancy update</button>
+            <button className="btn-primary mt-4 w-full sm:w-auto">{t('logPregnancy')}</button>
           </div>
         )}
 
@@ -130,9 +132,9 @@ export default function Wellness() {
           <div>
             <div className="flex items-center gap-3">
               <Wind className="text-primary" />
-              <h2 className="text-2xl font-black text-dark">Breathing</h2>
+              <h2 className="text-2xl font-black text-dark">{t('breathing')}</h2>
             </div>
-            <p className="mt-3 text-slate-600">Recommended now: <strong>{recommendedSession}</strong></p>
+            <p className="mt-3 text-slate-600">{t('recommendedNow')} <strong>{recommendedSession}</strong></p>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">
               {sessionTypes.map((type) => (
                 <button key={type} className={`btn-secondary justify-start ${type === recommendedSession ? 'border-primary bg-green-50' : ''}`}>
@@ -142,9 +144,9 @@ export default function Wellness() {
               ))}
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
-              <InfoRow label="Streak" value="12 days" />
-              <InfoRow label="Last session" value="8 min" />
-              <InfoRow label="Stress reduced" value="3 points" />
+              <InfoRow label={t('streak')} value="12 days" />
+              <InfoRow label={t('lastSession')} value="8 min" />
+              <InfoRow label={t('stressReduced')} value="3 points" />
             </div>
           </div>
         )}
@@ -153,30 +155,30 @@ export default function Wellness() {
           <div>
             <div className="flex items-center gap-3">
               <HeartPulse className="text-primary" />
-              <h2 className="text-2xl font-black text-dark">My Wellness</h2>
+              <h2 className="text-2xl font-black text-dark">{t('myWellness')}</h2>
             </div>
             <div className="mt-5 rounded-lg bg-dark p-6 text-white">
-              <p className="text-sm font-bold text-white/70">Unified Wellness Score</p>
+              <p className="text-sm font-bold text-white/70">{t('unifiedWellnessScore')}</p>
               <p className="mt-2 text-6xl font-black">{score}</p>
-              <p className="mt-2 text-sm text-white/80">Nutrition + mood + pregnancy + breathing + freshness</p>
+              <p className="mt-2 text-sm text-white/80">{t('wellnessScoreParts')}</p>
             </div>
             <div className="mt-5 rounded-lg bg-green-50 p-4">
-              <p className="flex items-center gap-2 font-black text-dark"><Sparkles className="text-primary" size={18} />AI suggestion</p>
+              <p className="flex items-center gap-2 font-black text-dark"><Sparkles className="text-primary" size={18} />{t('aiSuggestion')}</p>
               <p className="mt-2 text-sm leading-6 text-slate-700">{topRecommendation}</p>
             </div>
             <div className="mt-5 grid gap-3 md:grid-cols-3">
-              <InfoRow label="Mood" value={`${latestMood.emoji} ${latestMood.mood}`} />
-              <InfoRow label="Breathing" value="12 day streak" />
-              <InfoRow label="Sleep" value={<span className="inline-flex items-center gap-1"><Moon size={14} />{latestMood.sleepHours} hrs</span>} />
+              <InfoRow label={t('mood')} value={`${latestMood.emoji} ${latestMood.mood}`} />
+              <InfoRow label={t('breathing')} value="12 day streak" />
+              <InfoRow label={t('sleep')} value={<span className="inline-flex items-center gap-1"><Moon size={14} />{latestMood.sleepHours} hrs</span>} />
             </div>
           </div>
         )}
       </section>
 
       <section className="mt-6 grid gap-3 sm:grid-cols-3">
-        <button className="btn-secondary"><Activity size={18} />View history</button>
-        <Link to="/coach" className="btn-secondary"><Sparkles size={18} />Get AI advice</Link>
-        <Link to={wellnessProduct ? `/product/${wellnessProduct.id}` : '/marketplace'} className="btn-primary">Shop wellness foods</Link>
+        <button className="btn-secondary"><Activity size={18} />{t('viewHistory')}</button>
+        <Link to="/coach" className="btn-secondary"><Sparkles size={18} />{t('getAiAdvice')}</Link>
+        <Link to={wellnessProduct ? `/product/${wellnessProduct.id}` : '/marketplace'} className="btn-primary">{t('shopWellnessFoods')}</Link>
       </section>
     </div>
   );

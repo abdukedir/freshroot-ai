@@ -3,9 +3,11 @@ import { motion } from 'framer-motion';
 import { Heart, MapPin, Plus, ShieldCheck, Sparkles } from 'lucide-react';
 import { useApp } from '../context/AppContext';
 import { freshnessMeta, trustBadge } from '../utils/scoring';
+import { useLanguage } from '../context/LanguageContext';
 
 export default function ProductCard({ product }) {
   const { addToCart, saved, toggleSaved } = useApp();
+  const { categoryLabel, freshnessLabel, t } = useLanguage();
   const fresh = freshnessMeta(product.freshness);
   const trust = trustBadge(product.trustScore);
   return (
@@ -16,21 +18,21 @@ export default function ProductCard({ product }) {
       <div className="space-y-4 p-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide text-accent">{product.category}</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-accent">{categoryLabel(product.category)}</p>
             <Link to={`/product/${product.id}`} className="text-lg font-black text-dark hover:text-primary">{product.name}</Link>
-            <p className="text-sm text-slate-500">by {product.farmer.name}</p>
+            <p className="text-sm text-slate-500">{t('byFarmer', { name: product.farmer.name })}</p>
           </div>
-          <button onClick={() => toggleSaved(product.id)} className="rounded-lg border border-slate-200 p-2 text-slate-500" aria-label="Save product">
+          <button onClick={() => toggleSaved(product.id)} className="rounded-lg border border-slate-200 p-2 text-slate-500" aria-label={t('saveProduct')}>
             <Heart size={18} className={saved.includes(product.id) ? 'fill-accent text-accent' : ''} />
           </button>
         </div>
         <div className="grid grid-cols-2 gap-2 text-xs font-semibold">
-          <span className={`rounded-lg px-2 py-2 ${fresh.className}`}><Sparkles size={14} className="mr-1 inline" />{product.freshness} {fresh.label}</span>
+          <span className={`rounded-lg px-2 py-2 ${fresh.className}`}><Sparkles size={14} className="mr-1 inline" />{product.freshness} {freshnessLabel(product.freshness)}</span>
           <span className={`rounded-lg px-2 py-2 ${trust.className}`}><ShieldCheck size={14} className="mr-1 inline" />{product.trustScore}</span>
           <span className="rounded-lg bg-slate-100 px-2 py-2 text-slate-700"><MapPin size={14} className="mr-1 inline" />{product.distance} km</span>
           <span className="rounded-lg bg-green-50 px-2 py-2 text-primary">{product.price} ETB/{product.unit}</span>
         </div>
-        <button onClick={() => addToCart(product)} className="btn-primary w-full"><Plus size={18} />Add to cart</button>
+        <button onClick={() => addToCart(product)} className="btn-primary w-full"><Plus size={18} />{t('addToCart')}</button>
       </div>
     </motion.article>
   );
